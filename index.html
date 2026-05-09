@@ -132,18 +132,25 @@ function calc(){
     setTimeout(()=>{
         let gm=window._gm||0,gf=window._gf||0;
         let tg=gm>gf?'female':gm<gf?'male':(Math.random()>0.5?'male':'female');
-        let best=null,bs=0;
-        for(let id in CHARS){
-            let c=CHARS[id];
-            if(c.g!==tg)continue;
-            let tot=0,w=0;
-            for(let d of D){let cw=c.s[d]||0;let uw=sc[d]||0;tot+=cw*uw;w+=cw;}
-            let pct=w>0?Math.round(tot/w/3*100):Math.round(Math.random()*30+50);
-            pct=Math.min(98,Math.max(45,pct));
-            if(pct>bs){bs=pct;best={id,...c}}
+        let candidates=Object.keys(CHARS).filter(id=>CHARS[id].g===tg);
+        let dists={};
+        for(let id of candidates){
+            let c=CHARS[id],d=0;
+            for(let dim of D){let cw=c.s[dim]||0,uw=sc[dim]||0;d+=(cw-uw)*(cw-uw);}
+            dists[id]=d;
         }
-        if(!best){best={...CHARS['snape_m']};bs=78;best.id='snape_m';}
-        showR(best,bs);
+        let weights={};
+        for(let id of candidates)weights[id]=1.0/(dists[id]+1.0);
+        let avgW=Object.values(weights).reduce((a,b)=>a+b,0)/candidates.length;
+        let minW=avgW*0.25;
+        for(let id of candidates)weights[id]=Math.max(weights[id],minW);
+        let totalW=Object.values(weights).reduce((a,b)=>a+b,0);
+        let r=Math.random(),cum=0;
+        let best=candidates[0];
+        for(let id of candidates){cum+=weights[id]/totalW;if(r<=cum){best=id;break;}}
+        let c=CHARS[best];
+        let pct=Math.round(70+Math.random()*25);
+        showR({...c,id:best},pct);
     },2500);
 }
 function showR(c,pct){
