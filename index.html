@@ -167,22 +167,31 @@ function showR(c,pct){
         h+='<div class="story">';
         h+='<div class="stitle">'+c.tt+'</div>';
         c.tb.split('\\n').forEach(p=>{if(p)h+='<p style="margin-bottom:15px">'+p+'</p>';});
-        h+='<div class="cpbtn" onclick="copyStory(\''+c.n+'\',\''+c.tt+'\',\\'\\'+c.tb+'\\')">'+'📋 复制故事，去小红书分享</div>';
+        window._cs=c.tb;
+        window._cn=c.n;
+        window._ct=c.tt;
+        h+='<div class="cpbtn" id="cpbtn">📋 复制故事，去小红书分享</div>';
         h+='</div>';
     }
     document.getElementById('rc').innerHTML=h;
+    let btn=document.getElementById('cpbtn');
+    if(btn)btn.onclick=copyStory;
 }
-function copyStory(name,title,body){
-    let txt='🕯️ 哈利波特角色匹配测试\\n\\n我匹配到了'+name+'！\\n\\n'+title+'\\n\\n'+body.split('\\\\n').join('\\n')+'\\n\\n—— 测测你匹配到了谁？👆';
+function copyStory(){
+    let body=window._cs||'';
+    let name=window._cn||'';
+    let title=window._ct||'';
+    let txt='🕯️ 哈利波特角色匹配测试\n\n我匹配到了'+name+'！\n\n'+title+'\n\n'+body.replace(/\\n/g,'\n')+'\n\n—— 测测你匹配到了谁？👆';
     if(navigator.clipboard){
         navigator.clipboard.writeText(txt).then(()=>{
-            document.querySelector('.cpbtn').textContent='✅ 已复制！快去小红书分享吧';
-            setTimeout(()=>{document.querySelector('.cpbtn').textContent='📋 复制故事，去小红书分享';},3000);
+            let b=document.getElementById('cpbtn');
+            if(b){b.textContent='✅ 已复制！快去小红书分享吧';setTimeout(()=>{b.textContent='📋 复制故事，去小红书分享';},3000);}
         });
     }else{
         let ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);
         ta.select();document.execCommand('copy');document.body.removeChild(ta);
-        document.querySelector('.cpbtn').textContent='✅ 已复制！快去小红书分享吧';
+        let b=document.getElementById('cpbtn');
+        if(b){b.textContent='✅ 已复制！快去小红书分享吧';}
     }
 }
 function restart(){
