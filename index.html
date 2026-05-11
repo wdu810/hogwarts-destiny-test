@@ -206,6 +206,8 @@ function restart(){
         c.appendChild(s);
     }
 })();
+/* 微信小程序 WebView 通信补丁 */
+(function(){var e="miniprogram"===window.__wxjs_environment||navigator.userAgent.indexOf("miniProgram")>-1;if(!e)return;!function e(t){void 0!==window.wx&&window.wx.miniProgram?t():setTimeout(function(){e(t)},100)}(function(){var e=window.showResult;"function"==typeof e&&(window.showResult=function(t,n){e(t,n),window.wx.miniProgram.postMessage({data:{type:"test_result",result:{charId:t,match:n,timestamp:Date.now()}}})});new MutationObserver(function(e){e.forEach(function(e){if(e.addedNodes.length>0)for(var t=0;t<e.addedNodes.length;t++){var n=e.addedNodes[t];if(1===n.nodeType&&"result-screen"===n.id){setTimeout(function(){var e=document.querySelector(".cname"),t=document.querySelector(".mpct");e&&t&&window.wx.miniProgram.postMessage({data:{type:"test_result",result:{charId:e.textContent.trim(),match:parseInt(t.textContent)||0,timestamp:Date.now()}}})},500);break}}})}).observe(document.body,{childList:!0,subtree:!0})})})();
 </script>
 </body>
 </html>
